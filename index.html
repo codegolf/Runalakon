@@ -1,0 +1,127 @@
+<meta charset=utf-8>
+<pre id="p"></pre>
+<button onclick=location=location>refresh</button>
+<script>
+/*
+ 
+                                                    o/                             | |
+                                                   /|_                             | |                    
+    o                   o         o                /                                V                       
+   /|\                 /|L       ||\                                                                       Λ
+___/_\_________________/|_________|\___________       ____________________________\o__//__________________| |________________     ________________________________________
+                                               |     |                                                                      |     |
+
+
+*/
+
+
+var stand 		= ["   ","   "," o ","/|\\","/_\\","   "];
+var run1 		= ["   ","   "," o ","/|L","/|_","   "];
+var run2 		= ["   ","   "," o ","||\\","_|\\","   "];
+var jump 		= [" o/","/|_","/  ","   ","   ","   "];
+var slide 		= ["   ","   ","   ","   ","o_<","   "];
+
+var pit 		= ["       ","       ","       ","       ","       ","|     |"];
+var stalagtite 	= ["  | |  ","  | |  ","  | |  ","   V   ","_______","       "];
+var stalagmite 	= ["       ","       ","       ","   Λ   ","__| |__","       "];
+var obstacles 	= [];
+var obstacle 	= [];
+
+var state = 0;
+var rate = 50;
+var cycle = 0;
+var obstacleDist = 20;
+var worldOffset = 0;
+var move = stand;
+
+jumpstate = 0;
+slidestate = 0;
+
+collision = 0;
+
+
+for (var i = 0; i < 10; ++i) {
+	obstacles.push(Math.floor(Math.random()*2.99));
+}
+obstacles = obstacles.concat(obstacles);
+
+var display = function() {
+	var level = [];
+	for( var i = 0; i < 6; ++i ) {
+		level[i] = "";
+		for ( var j = 0; j < 20; ++j ) {
+			for ( var k = 0; k < obstacleDist; ++k ) {
+				if ( i == 4 ) {
+					level[i] += "_";
+				} else {
+					level[i] += " ";
+				}
+			}
+			switch(obstacles[j]) {
+				case 0:
+					obstacle = pit;
+					break;
+				case 1:
+					obstacle = stalagtite;
+					break;
+				case 2:
+					obstacle = stalagmite;
+					break;
+			}
+			level[i] += obstacle[i];
+		}
+		level[i] = level[i].substr(worldOffset,80);
+
+		level[i] = level[i].substr(0,3) + (move[i] != "   " ? move[i] : level[i].substr(3,3)) + level[i].substr(6);
+	}
+	p.innerHTML = level.join("\n");
+}
+
+window.addEventListener("keyup", function(e){
+	if(state <= 1){
+		//up
+		if (e.keyCode == 90 || e.keyCode == 38) {
+			state = 2;
+		}
+		
+		//down
+		if (e.keyCode == 83 || e.keyCode == 40) {
+			state = 3;
+		}
+	}
+});
+
+setInterval(function(){
+	if(state == 0){
+		move = stand;
+		//state = 1;
+	//} else if (state == 1) {
+	//	move = run2;
+	//	state = 0;		
+	}
+	 else if (state == 2) {
+		move = jump;
+		jumpstate++;
+		if(jumpstate == 10){
+			jumpstate = 0;
+			state = 0;
+		}
+	} else if (state == 3) {
+		move = slide;
+		slidestate++;
+		if(slidestate == 7){
+			slidestate = 0;
+			state = 0;
+		}
+	}
+	display();
+	worldOffset ++;
+	if(worldOffset == 266){
+		worldOffset = 0;
+	}
+},rate);
+
+</script>
+
+
+
