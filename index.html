@@ -28,20 +28,21 @@ var obstacles 	= [];
 var obstacle 	= [];
 
 var state = 0;
-var rate = 50;
-var cycle = 0;
+var rate = 100;
 var obstacleDist = 20;
+var obstacleLength = 7;
 var worldOffset = 0;
 var move = stand;
+var garsMauvais = 0;
+var currentObstaclePosition = 0;
+var score = 0;
+var nbObstacles = 5;
 
 jumpstate = 0;
 slidestate = 0;
 
-collision = 0;
-
-
-for (var i = 0; i < 10; ++i) {
-	obstacles.push(Math.floor(Math.random()*2.99));
+for (var i = 0; i < nbObstacles; ++i) {
+	obstacles.push(Math.floor(Math.random()*3));
 }
 obstacles = obstacles.concat(obstacles);
 
@@ -49,7 +50,7 @@ var display = function() {
 	var level = [];
 	for( var i = 0; i < 6; ++i ) {
 		level[i] = "";
-		for ( var j = 0; j < 20; ++j ) {
+		for ( var j = 0; j < 2 * nbObstacles; ++j ) {
 			for ( var k = 0; k < obstacleDist; ++k ) {
 				if ( i == 4 ) {
 					level[i] += "_";
@@ -74,7 +75,22 @@ var display = function() {
 
 		level[i] = level[i].substr(0,3) + (move[i] != "   " ? move[i] : level[i].substr(3,3)) + level[i].substr(6);
 	}
-	p.innerHTML = level.join("\n");
+	p.innerHTML = level.join("\n") + "\n" + score;
+}
+
+var testCollision = function(){
+	var currentObstacle = Math.floor(worldOffset / (obstacleDist + obstacleLength));
+	switch(obstacles[currentObstacle]){
+		case 0 : //pit
+			if(state != 2 && currentObstaclePosition > 0) garsMauvais = 1;
+			break;
+		case 1 : //stalagtite
+			if(state != 3 && currentObstaclePosition > 1 && currentObstaclePosition < 5 ) garsMauvais = 1;
+			break;
+		case 2 : // stalagmite
+			if(state != 2 && currentObstaclePosition > 1 && currentObstaclePosition < 5 ) garsMauvais = 1;
+			break;
+	}
 }
 
 window.addEventListener("keyup", function(e){
@@ -91,7 +107,7 @@ window.addEventListener("keyup", function(e){
 	}
 });
 
-setInterval(function(){
+var game = function(){
 	if(state == 0){
 		move = stand;
 		//state = 1;
@@ -109,19 +125,32 @@ setInterval(function(){
 	} else if (state == 3) {
 		move = slide;
 		slidestate++;
-		if(slidestate == 7){
+		if(slidestate == 8){
 			slidestate = 0;
 			state = 0;
 		}
 	}
 	display();
 	worldOffset ++;
-	if(worldOffset == 266){
+	if(worldOffset == nbObstacles * 27){
 		worldOffset = 0;
 	}
-},rate);
+	if(currentObstaclePosition == obstacleLength){
+		currentObstaclePosition = 0;
+		score ++;
+		rate --;
+	}
+	if(worldOffset % (obstacleDist + obstacleLength) >= obstacleDist - 4 
+		&& worldOffset % (obstacleDist + obstacleLength) <= (obstacleDist + obstacleLength - 1) - 4){
+		testCollision();
+		currentObstaclePosition ++;
+	}
+	if(garsMauvais){
+		alert("Sale merde");
+	} else {
+		setTimeout(game,rate);
+	}
+};
+game();
 
 </script>
-
-
-
