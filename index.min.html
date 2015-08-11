@@ -1,8 +1,4 @@
-<meta charset=utf-8>
-<pre id="p"></pre>
-<button onclick=location=location>refresh</button>
-<script>
-
+<meta charset=utf-8><pre id="p"></pre><button onclick=location=location>refresh</button><script>
 run1 		= ["   ","   "," o ","/|.",",\\_","   "];
 jump2 		= ["   "," o/","/|_","/  ","   ","   "];
 jump3 		= [" o/","/|_","/  ","   ","   ","   "];
@@ -11,74 +7,25 @@ pit 		= ["       ","       ","       ","       ","       ","|^^^^^|"];
 stalagtite 	= ["  | |  ","  | |  ","  | |  ","   V   ","_______","       "];
 stalagmite 	= ["       ","       ","       ","   Λ   ","__| |__","       "];
 obstacles 	= [];
-state = 0;
+state = gm = cop = score = actionState = worldOffset = 0;
 rate = 100;
-worldOffset = 0;
-gm = 0;
-cop = 0;
-score = 0;
-actionState = 0;
-
-for (i = 0; i < 50; ++i) {
-	obstacles.push(~~(Math.random()*3));
-}
-obstacles = obstacles.concat(obstacles);
-
-window.addEventListener("keyup", function(e){
+for (i = 0; i < 50; ++i) obstacles[i+50] = obstacles[i] = ~~(Math.random()*3);
+onkeyup=function(e){
  	e = e.keyCode;
-	if(!state) state = (e == 90 || e == 38) ? 1 : (e == 83 || e == 40) ? 2 : state;
-});
-
-game = function(){
-	move = (state == 1) ? (actionState == 0 || actionState == 9) ? jump2 : jump3 : (state == 2) ? slide : run1;
-
-	if (state) 
-	{
-		actionState++;
-		if(actionState == 10){
-			actionState = 0;
-			state = 0;
-		}
-	}
-
-	level = [];
-	for( i = 0; i < 6; ++i ) {
-		level[i] = "";
-		for ( j = 0; j < 100; ++j ) {
-			for ( k = 0; k < 20; ++k ) {
-				if ( i == 4 ) {
-					level[i] += "_";
-				} else {
-					level[i] += " ";
-				}
-			}
-			level[i] += [pit,stalagtite,stalagmite][obstacles[j]][i];
-		}
-		level[i] = level[i].substr(worldOffset,80);
-
-		level[i] = level[i].substr(0,3) + (move[i] != "   " ? move[i] : level[i].substr(3,3)) + level[i].substr(6);
-	}
-	p.innerHTML = level.join("\n") + "\n" + score;
-
-	worldOffset ++;
-	if(worldOffset == 1350){
-		worldOffset = 0;
-	}
-	if(cop == 7){
-		cop = 0;
-		score ++;
-		if (rate > 50 ) rate --;
-	}
-
-	if(worldOffset % 27 >= 16 && worldOffset % 27 <= 22)
-	{
-		gm = [state != 1 && cop > 0,state != 2 && cop > 1 && cop < 5,state != 1 && cop > 1 && cop < 5][obstacles[~~(worldOffset / 27)]];
-		cop ++;
-	}
-	
-	gm ? alert("Sale merde") : setTimeout(game,rate);
-	
+	state||(state = (e == 90 || e == 38) ? 1 : (e == 83 || e == 40) ? 2 : state);
 };
-game();
-
+(game = function(){
+	move = (state == 1) ? (actionState == 0 || actionState == 9) ? jump2 : jump3 : (state == 2) ? slide : run1;
+	if (state && ++actionState == 10) actionState = state = 0;
+	p.innerHTML = "";
+	for( i = 0; i < 6; ++i ) {
+		line = "";
+		for ( j = 0; j < 100; ++j )	line += " _"[+(i==4)].repeat(20) + [pit,stalagtite,stalagmite][obstacles[j]][i];
+		p.innerHTML += (w = line.substr(worldOffset,80)).substr(0,3) + (move[i] != "   " ? move[i] : w.substr(3,3)) + w.substr(6) + "\n" + ((i==5) ? score : "");
+	}
+	worldOffset = ++worldOffset % 1350;
+	if(cop == 7) cop = 0, score ++, rate>50&&rate--;
+	if(worldOffset % 27 > 15 && worldOffset % 27 < 23) gm = [state != 1 && cop > 0, state != 2 && cop > 1 && cop < 5, state != 1 && cop > 1 && cop < 5][obstacles[~~(worldOffset / 27)]], cop ++;
+	gm ? alert("Perdu !") : setTimeout(game,rate);
+})()
 </script>
