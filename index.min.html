@@ -1,31 +1,24 @@
-<meta charset=utf-8><pre id="p"></pre><button onclick=location=location>refresh</button><script>
-run1 		= ["   ","   "," o ","/|.",",\\_","   "];
-jump2 		= ["   "," o/","/|_","/  ","   ","   "];
-jump3 		= [" o/","/|_","/  ","   ","   ","   "];
-slide 		= ["   ","   ","   ","   ","o_<","   "];
-pit 		= ["       ","       ","       ","       ","       ","|^^^^^|"];
-stalagtite 	= ["  | |  ","  | |  ","  | |  ","   V   ","_______","       "];
-stalagmite 	= ["       ","       ","       ","   Λ   ","__| |__","       "];
-obstacles 	= [];
-state = gm = cop = score = actionState = worldOffset = 0;
-rate = 100;
-for (i = 0; i < 50; ++i) obstacles[i+50] = obstacles[i] = ~~(Math.random()*3);
+<pre id=p><script>
+k=98;
+for (h=[a=b=c=d=e=f=g=i=0]; i < 49; ++i) h[i+49] = h[i] = ~~(Math.random()*3);
 onkeyup=function(e){
  	e = e.keyCode;
-	state||(state = (e == 90 || e == 38) ? 1 : (e == 83 || e == 40) ? 2 : state);
+	a||(a = (e == 90 || e == 38) ? 1 : (e == 83 || e == 40) ? 2 : a);
 };
-(game = function(){
-	move = (state == 1) ? (actionState == 0 || actionState == 9) ? jump2 : jump3 : (state == 2) ? slide : run1;
-	if (state && ++actionState == 10) actionState = state = 0;
+(n = function(){
+	b = (a == 1) ? (f == 0 || f == 9) ? 2 : 3 : (a == 2) ? 0 : 1;
+	if (a && ++f == 10) f = a = 0;
 	p.innerHTML = "";
 	for( i = 0; i < 6; ++i ) {
-		line = "";
-		for ( j = 0; j < 100; ++j )	line += " _"[+(i==4)].repeat(20) + [pit,stalagtite,stalagmite][obstacles[j]][i];
-		p.innerHTML += (w = line.substr(worldOffset,80)).substr(0,3) + (move[i] != "   " ? move[i] : w.substr(3,3)) + w.substr(6) + "\n" + ((i==5) ? score : "");
+		m = "";
+		for ( j = 0; j < 98; ++j )	m += " _"[+(i==4)].repeat(20) + (["|^^^^^|",o="  | |  ",o,o,"   V   ","_______",,,,,"   \u039b   ","__| |__"][h[j]*6+i-5]||"       ");
+		l = ["o_<",,,," o ","/|.",",\\_",,,q=" o/",r="/|_",s="/  ",,,q,r,s][b*6+i-4];
+		w = m.substr(g,98);
+		p.innerHTML += (l ? w.substr(0,3) + l + w.substr(6) : w ) + "\n" + ((i==5) ? e : "");
 	}
-	worldOffset = ++worldOffset % 1350;
-	if(cop == 7) cop = 0, score ++, rate>50&&rate--;
-	if(worldOffset % 27 > 15 && worldOffset % 27 < 23) gm = [state != 1 && cop > 0, state != 2 && cop > 1 && cop < 5, state != 1 && cop > 1 && cop < 5][obstacles[~~(worldOffset / 27)]], cop ++;
-	gm ? alert("Perdu !") : setTimeout(game,rate);
+	g = ++g % 1350;
+	if(d == 7) d = 0, e ++, k>49&&k--;
+	if(g % 27 > 15 && g % 27 < 23) c = [a != 1 && d > 0, a != 2 && d > 1 && d < 5, a != 1 && d > 1 && d < 5][h[~~(g / 27)]], d ++;
+	c ? alert("Perdu !") : setTimeout(n,k);
 })()
 </script>
